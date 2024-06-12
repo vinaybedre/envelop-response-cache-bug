@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "nx": "nx"
+    "nx": "nx",
+    "start-federation":"nx run-many --target=serve --configuration=production --maxParallel=20 --projects=company,employee",
+    "start":"nx run-many --target=serve --configuration=production --maxParallel=20 --projects=gateway"
   },
   "private": true,
   "devDependencies": {
