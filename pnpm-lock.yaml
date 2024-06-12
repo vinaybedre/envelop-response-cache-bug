@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@graphql-yoga/nestjs-federation@3.3.1':
+    hash: famg4ymphuupgn7aqsblhwj274
+    path: patches/@graphql-yoga__nestjs-federation@3.3.1.patch
+
 dependencies:
   '@apollo/server':
     specifier: ^4.5.0
@@ -16,7 +21,7 @@ dependencies:
     version: 3.3.1(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(@nestjs/graphql@12.1.1)(graphql-yoga@5.3.1)(graphql@16.8.1)
   '@graphql-yoga/nestjs-federation':
     specifier: ^3.0.1
-    version: 3.3.1(@graphql-tools/utils@10.2.2)(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(@nestjs/graphql@12.1.1)(@whatwg-node/fetch@0.9.18)(graphql-yoga@5.3.1)(graphql@16.8.1)
+    version: 3.3.1(patch_hash=famg4ymphuupgn7aqsblhwj274)(@graphql-tools/utils@10.2.2)(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(@nestjs/graphql@12.1.1)(@whatwg-node/fetch@0.9.18)(graphql-yoga@5.3.1)(graphql@16.8.1)
   '@graphql-yoga/plugin-response-cache':
     specifier: ^3.5.1
     version: 3.5.1(@envelop/core@5.0.1)(graphql-yoga@5.3.1)(graphql@16.8.1)
@@ -2113,7 +2118,7 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /@graphql-yoga/nestjs-federation@3.3.1(@graphql-tools/utils@10.2.2)(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(@nestjs/graphql@12.1.1)(@whatwg-node/fetch@0.9.18)(graphql-yoga@5.3.1)(graphql@16.8.1):
+  /@graphql-yoga/nestjs-federation@3.3.1(patch_hash=famg4ymphuupgn7aqsblhwj274)(@graphql-tools/utils@10.2.2)(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(@nestjs/graphql@12.1.1)(@whatwg-node/fetch@0.9.18)(graphql-yoga@5.3.1)(graphql@16.8.1):
     resolution: {integrity: sha512-3GiP8LFcjcDGNRLIw2nJOYrb0rHI7h9ayv469UcbxUEsXt9KyDnoJAIsx9lExkWijb1ocLfjEKpLx6MVOCbghA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -2139,6 +2144,7 @@ packages:
       - graphql-yoga
       - supports-color
     dev: false
+    patched: true
 
   /@graphql-yoga/nestjs@3.3.1(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(@nestjs/graphql@12.1.1)(graphql-yoga@5.3.1)(graphql@16.8.1):
     resolution: {integrity: sha512-cflfHRWSsuuuJGJCg+BvI+JC/igWW6foJS9zvrliGTr3ARkZkXeHeUP7Qc5go+3cpmk8XdERe1+AnnQzUE2HZQ==}

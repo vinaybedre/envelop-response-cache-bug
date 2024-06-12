@@ -1,0 +1,466 @@
+diff --git a/dist/cjs/index.js b/dist/cjs/index.js
+index 2979cca0f8dc5e8a9f2dc7d310b30eab772d313f..d040d210cab4e15fb1b5ae9b334047f6d4aea1f9 100644
+--- a/dist/cjs/index.js
++++ b/dist/cjs/index.js
+@@ -10,69 +10,94 @@ const nestjs_1 = require("@graphql-yoga/nestjs");
+ const plugin_apollo_inline_trace_1 = require("@graphql-yoga/plugin-apollo-inline-trace");
+ const common_1 = require("@nestjs/common");
+ const graphql_2 = require("@nestjs/graphql");
+-let YogaFederationDriver = exports.YogaFederationDriver = class YogaFederationDriver extends nestjs_1.AbstractYogaDriver {
++let YogaFederationDriver =
++  (exports.YogaFederationDriver = class YogaFederationDriver extends (
++    nestjs_1.AbstractYogaDriver
++  ) {
+     graphqlFederationFactory;
+     subscriptionService;
+     constructor(graphqlFederationFactory) {
+-        super();
+-        this.graphqlFederationFactory = graphqlFederationFactory;
++      super();
++      this.graphqlFederationFactory = graphqlFederationFactory;
+     }
+     async generateSchema(options) {
+-        return await this.graphqlFederationFactory.generateSchema(options);
++      return await this.graphqlFederationFactory.generateSchema(options);
+     }
+     async start(options) {
+-        if (options.definitions?.path) {
+-            if (!options.schema) {
+-                throw new Error('Schema is required when providing definitions path');
+-            }
+-            await this.graphQlFactory.generateDefinitions((0, subgraph_1.printSubgraphSchema)(options.schema), options);
+-        }
+-        await super.start({
+-            ...options,
+-            plugins: [...(options?.plugins || []), (0, plugin_apollo_inline_trace_1.useApolloInlineTrace)()],
+-        });
+-        if (options.subscriptions && options.schema) {
+-            const config = options.subscriptions === true
+-                ? {
+-                    'graphql-ws': true,
+-                }
+-                : options.subscriptions;
+-            this.subscriptionService = new graphql_2.GqlSubscriptionService({
+-                schema: options.schema,
+-                path: options.path,
+-                context: options.context,
+-                ...config,
+-            }, this.httpAdapterHost.httpAdapter?.getHttpServer());
++      if (options.definitions?.path) {
++        if (!options.schema) {
++          throw new Error("Schema is required when providing definitions path");
+         }
++        await this.graphQlFactory.generateDefinitions(
++          (0, subgraph_1.printSubgraphSchema)(options.schema),
++          options
++        );
++      }
++      await super.start({
++        ...options,
++        plugins: [
++          ...(options?.plugins || []),
++          (0, plugin_apollo_inline_trace_1.useApolloInlineTrace)(),
++        ],
++      });
++      if (options.subscriptions && options.schema) {
++        const config =
++          options.subscriptions === true
++            ? {
++                "graphql-ws": true,
++              }
++            : options.subscriptions;
++        this.subscriptionService = new graphql_2.GqlSubscriptionService(
++          {
++            schema: options.schema,
++            path: options.path,
++            context: options.context,
++            ...config,
++          },
++          this.httpAdapterHost.httpAdapter?.getHttpServer()
++        );
++      }
+     }
+     async stop() {
+-        await this.subscriptionService?.stop();
++      await this.subscriptionService?.stop();
+     }
+-};
+-exports.YogaFederationDriver = YogaFederationDriver = tslib_1.__decorate([
++  });
++exports.YogaFederationDriver = YogaFederationDriver = tslib_1.__decorate(
++  [
+     (0, common_1.Injectable)(),
+-    tslib_1.__metadata("design:paramtypes", [graphql_2.GraphQLFederationFactory])
+-], YogaFederationDriver);
+-let YogaGatewayDriver = exports.YogaGatewayDriver = class YogaGatewayDriver extends nestjs_1.AbstractYogaDriver {
++    tslib_1.__metadata("design:paramtypes", [
++      graphql_2.GraphQLFederationFactory,
++    ]),
++  ],
++  YogaFederationDriver
++);
++let YogaGatewayDriver =
++  (exports.YogaGatewayDriver = class YogaGatewayDriver extends (
++    nestjs_1.AbstractYogaDriver
++  ) {
+     async generateSchema(_options) {
+-        return new graphql_1.GraphQLSchema({});
++      return new graphql_1.GraphQLSchema({});
+     }
+     async start(options) {
+-        const { server: serverOpts = {}, gateway: gatewayOpts = {} } = options;
+-        const gateway = new gateway_1.ApolloGateway(gatewayOpts);
+-        await gateway.load();
+-        await super.start({
+-            ...serverOpts,
+-            plugins: [...(serverOpts.plugins || []), (0, apollo_federation_1.useApolloFederation)({ gateway })],
+-        });
++      const { server: serverOpts = {}, gateway: gatewayOpts = {} } = options;
++      const gateway = new gateway_1.ApolloGateway(gatewayOpts);
++      await gateway.load();
++      await super.start({
++        ...serverOpts,
++        plugins: [
++          (0, apollo_federation_1.useApolloFederation)({ gateway }),
++          ...(serverOpts.plugins || []),
++        ],
++      });
+     }
+     async mergeDefaultOptions(options) {
+-        return {
+-            ...options,
+-            server: await super.mergeDefaultOptions(options?.server ?? {}),
+-        };
++      return {
++        ...options,
++        server: await super.mergeDefaultOptions(options?.server ?? {}),
++      };
+     }
+-};
+-exports.YogaGatewayDriver = YogaGatewayDriver = tslib_1.__decorate([
+-    (0, common_1.Injectable)()
+-], YogaGatewayDriver);
++  });
++exports.YogaGatewayDriver = YogaGatewayDriver = tslib_1.__decorate(
++  [(0, common_1.Injectable)()],
++  YogaGatewayDriver
++);
+diff --git a/dist/esm/index.js b/dist/esm/index.js
+index 61e96184c385702ab4abbb638f9086c9f64e5400..4b51e17bfbd3bc03a7b5cdda58783232babcecd8 100644
+--- a/dist/esm/index.js
++++ b/dist/esm/index.js
+@@ -1,75 +1,86 @@
+ import { __decorate, __metadata } from "tslib";
+-import { GraphQLSchema } from 'graphql';
+-import { ApolloGateway } from '@apollo/gateway';
+-import { printSubgraphSchema } from '@apollo/subgraph';
+-import { useApolloFederation } from '@envelop/apollo-federation';
+-import { AbstractYogaDriver, } from '@graphql-yoga/nestjs';
+-import { useApolloInlineTrace } from '@graphql-yoga/plugin-apollo-inline-trace';
+-import { Injectable } from '@nestjs/common';
+-import { GqlSubscriptionService, GraphQLFederationFactory, } from '@nestjs/graphql';
++import { GraphQLSchema } from "graphql";
++import { ApolloGateway } from "@apollo/gateway";
++import { printSubgraphSchema } from "@apollo/subgraph";
++import { useApolloFederation } from "@envelop/apollo-federation";
++import { AbstractYogaDriver } from "@graphql-yoga/nestjs";
++import { useApolloInlineTrace } from "@graphql-yoga/plugin-apollo-inline-trace";
++import { Injectable } from "@nestjs/common";
++import {
++  GqlSubscriptionService,
++  GraphQLFederationFactory,
++} from "@nestjs/graphql";
+ export let YogaFederationDriver = class YogaFederationDriver extends AbstractYogaDriver {
+-    graphqlFederationFactory;
+-    subscriptionService;
+-    constructor(graphqlFederationFactory) {
+-        super();
+-        this.graphqlFederationFactory = graphqlFederationFactory;
++  graphqlFederationFactory;
++  subscriptionService;
++  constructor(graphqlFederationFactory) {
++    super();
++    this.graphqlFederationFactory = graphqlFederationFactory;
++  }
++  async generateSchema(options) {
++    return await this.graphqlFederationFactory.generateSchema(options);
++  }
++  async start(options) {
++    if (options.definitions?.path) {
++      if (!options.schema) {
++        throw new Error("Schema is required when providing definitions path");
++      }
++      await this.graphQlFactory.generateDefinitions(
++        printSubgraphSchema(options.schema),
++        options
++      );
+     }
+-    async generateSchema(options) {
+-        return await this.graphqlFederationFactory.generateSchema(options);
+-    }
+-    async start(options) {
+-        if (options.definitions?.path) {
+-            if (!options.schema) {
+-                throw new Error('Schema is required when providing definitions path');
++    await super.start({
++      ...options,
++      plugins: [...(options?.plugins || []), useApolloInlineTrace()],
++    });
++    if (options.subscriptions && options.schema) {
++      const config =
++        options.subscriptions === true
++          ? {
++              "graphql-ws": true,
+             }
+-            await this.graphQlFactory.generateDefinitions(printSubgraphSchema(options.schema), options);
+-        }
+-        await super.start({
+-            ...options,
+-            plugins: [...(options?.plugins || []), useApolloInlineTrace()],
+-        });
+-        if (options.subscriptions && options.schema) {
+-            const config = options.subscriptions === true
+-                ? {
+-                    'graphql-ws': true,
+-                }
+-                : options.subscriptions;
+-            this.subscriptionService = new GqlSubscriptionService({
+-                schema: options.schema,
+-                path: options.path,
+-                context: options.context,
+-                ...config,
+-            }, this.httpAdapterHost.httpAdapter?.getHttpServer());
+-        }
+-    }
+-    async stop() {
+-        await this.subscriptionService?.stop();
++          : options.subscriptions;
++      this.subscriptionService = new GqlSubscriptionService(
++        {
++          schema: options.schema,
++          path: options.path,
++          context: options.context,
++          ...config,
++        },
++        this.httpAdapterHost.httpAdapter?.getHttpServer()
++      );
+     }
++  }
++  async stop() {
++    await this.subscriptionService?.stop();
++  }
+ };
+-YogaFederationDriver = __decorate([
+-    Injectable(),
+-    __metadata("design:paramtypes", [GraphQLFederationFactory])
+-], YogaFederationDriver);
++YogaFederationDriver = __decorate(
++  [Injectable(), __metadata("design:paramtypes", [GraphQLFederationFactory])],
++  YogaFederationDriver
++);
+ export let YogaGatewayDriver = class YogaGatewayDriver extends AbstractYogaDriver {
+-    async generateSchema(_options) {
+-        return new GraphQLSchema({});
+-    }
+-    async start(options) {
+-        const { server: serverOpts = {}, gateway: gatewayOpts = {} } = options;
+-        const gateway = new ApolloGateway(gatewayOpts);
+-        await gateway.load();
+-        await super.start({
+-            ...serverOpts,
+-            plugins: [...(serverOpts.plugins || []), useApolloFederation({ gateway })],
+-        });
+-    }
+-    async mergeDefaultOptions(options) {
+-        return {
+-            ...options,
+-            server: await super.mergeDefaultOptions(options?.server ?? {}),
+-        };
+-    }
++  async generateSchema(_options) {
++    return new GraphQLSchema({});
++  }
++  async start(options) {
++    const { server: serverOpts = {}, gateway: gatewayOpts = {} } = options;
++    const gateway = new ApolloGateway(gatewayOpts);
++    await gateway.load();
++    await super.start({
++      ...serverOpts,
++      plugins: [
++        useApolloFederation({ gateway }),
++        ...(serverOpts.plugins || []),
++      ],
++    });
++  }
++  async mergeDefaultOptions(options) {
++    return {
++      ...options,
++      server: await super.mergeDefaultOptions(options?.server ?? {}),
++    };
++  }
+ };
+-YogaGatewayDriver = __decorate([
+-    Injectable()
+-], YogaGatewayDriver);
++YogaGatewayDriver = __decorate([Injectable()], YogaGatewayDriver);
+diff --git a/src/index.ts b/src/index.ts
+index 97e17124df8b83b11407a564d5289b8ba51f408b..a9fdf9a08b5e491eeead58560b35270dc64e83ea 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -1,44 +1,52 @@
+-import { GraphQLSchema } from 'graphql';
+-import { ApolloGateway, GatewayConfig } from '@apollo/gateway';
+-import { printSubgraphSchema } from '@apollo/subgraph';
+-import { useApolloFederation } from '@envelop/apollo-federation';
++import { GraphQLSchema } from "graphql";
++import { ApolloGateway, GatewayConfig } from "@apollo/gateway";
++import { printSubgraphSchema } from "@apollo/subgraph";
++import { useApolloFederation } from "@envelop/apollo-federation";
+ import {
+   AbstractYogaDriver,
+   YogaDriver,
+   YogaDriverConfig,
+   YogaDriverPlatform,
+-} from '@graphql-yoga/nestjs';
+-import { useApolloInlineTrace } from '@graphql-yoga/plugin-apollo-inline-trace';
+-import { Injectable, Type } from '@nestjs/common';
++} from "@graphql-yoga/nestjs";
++import { useApolloInlineTrace } from "@graphql-yoga/plugin-apollo-inline-trace";
++import { Injectable, Type } from "@nestjs/common";
+ import {
+   GqlSubscriptionService,
+   GraphQLFederationFactory,
+   SubscriptionConfig,
+-} from '@nestjs/graphql';
++} from "@nestjs/graphql";
+ 
+-export type YogaFederationDriverConfig<Platform extends YogaDriverPlatform = 'express'> =
+-  YogaDriverConfig<Platform>;
++export type YogaFederationDriverConfig<
++  Platform extends YogaDriverPlatform = "express"
++> = YogaDriverConfig<Platform>;
+ 
+ @Injectable()
+ export class YogaFederationDriver<
+-  Platform extends YogaDriverPlatform = 'express',
++  Platform extends YogaDriverPlatform = "express"
+ > extends AbstractYogaDriver<Platform> {
+   private subscriptionService?: GqlSubscriptionService;
+ 
+-  constructor(private readonly graphqlFederationFactory: GraphQLFederationFactory) {
++  constructor(
++    private readonly graphqlFederationFactory: GraphQLFederationFactory
++  ) {
+     super();
+   }
+ 
+-  async generateSchema(options: YogaFederationDriverConfig<Platform>): Promise<GraphQLSchema> {
++  async generateSchema(
++    options: YogaFederationDriverConfig<Platform>
++  ): Promise<GraphQLSchema> {
+     return await this.graphqlFederationFactory.generateSchema(options);
+   }
+ 
+   public async start(options: YogaFederationDriverConfig<Platform>) {
+     if (options.definitions?.path) {
+       if (!options.schema) {
+-        throw new Error('Schema is required when providing definitions path');
++        throw new Error("Schema is required when providing definitions path");
+       }
+-      await this.graphQlFactory.generateDefinitions(printSubgraphSchema(options.schema), options);
++      await this.graphQlFactory.generateDefinitions(
++        printSubgraphSchema(options.schema),
++        options
++      );
+     }
+ 
+     await super.start({
+@@ -50,7 +58,7 @@ export class YogaFederationDriver<
+       const config: SubscriptionConfig =
+         options.subscriptions === true
+           ? {
+-              'graphql-ws': true,
++              "graphql-ws": true,
+             }
+           : options.subscriptions;
+ 
+@@ -61,7 +69,7 @@ export class YogaFederationDriver<
+           context: options.context,
+           ...config,
+         },
+-        this.httpAdapterHost.httpAdapter?.getHttpServer(),
++        this.httpAdapterHost.httpAdapter?.getHttpServer()
+       );
+     }
+   }
+@@ -71,32 +79,36 @@ export class YogaFederationDriver<
+   }
+ }
+ 
+-export interface YogaGatewayDriverConfig<Platform extends YogaDriverPlatform = 'express'> {
++export interface YogaGatewayDriverConfig<
++  Platform extends YogaDriverPlatform = "express"
++> {
+   driver?: Type<YogaDriver<Platform>>;
+   gateway?: GatewayConfig;
+   server?: Omit<
+     YogaDriverConfig<Platform>,
+-    | 'endpoint'
+-    | 'schema'
+-    | 'typeDefs'
+-    | 'definitions'
+-    | 'resolvers'
+-    | 'resolverValidationOptions'
+-    | 'directiveResolvers'
+-    | 'autoSchemaFile'
+-    | 'transformSchema'
+-    | 'subscriptions'
+-    | 'buildSchemaOptions'
+-    | 'fieldResolverEnhancers'
+-    | 'driver'
++    | "endpoint"
++    | "schema"
++    | "typeDefs"
++    | "definitions"
++    | "resolvers"
++    | "resolverValidationOptions"
++    | "directiveResolvers"
++    | "autoSchemaFile"
++    | "transformSchema"
++    | "subscriptions"
++    | "buildSchemaOptions"
++    | "fieldResolverEnhancers"
++    | "driver"
+   >;
+ }
+ 
+ @Injectable()
+ export class YogaGatewayDriver<
+-  Platform extends YogaDriverPlatform = 'express',
++  Platform extends YogaDriverPlatform = "express"
+ > extends AbstractYogaDriver<Platform> {
+-  public async generateSchema(_options: YogaGatewayDriverConfig<Platform>): Promise<GraphQLSchema> {
++  public async generateSchema(
++    _options: YogaGatewayDriverConfig<Platform>
++  ): Promise<GraphQLSchema> {
+     return new GraphQLSchema({});
+   }
+ 
+@@ -108,12 +120,15 @@ export class YogaGatewayDriver<
+ 
+     await super.start({
+       ...serverOpts,
+-      plugins: [...(serverOpts.plugins || []), useApolloFederation({ gateway })],
++      plugins: [
++        useApolloFederation({ gateway }),
++        ...(serverOpts.plugins || []),
++      ],
+     });
+   }
+ 
+   public async mergeDefaultOptions(
+-    options: Record<string, unknown>,
++    options: Record<string, unknown>
+   ): Promise<Record<string, unknown>> {
+     return {
+       ...options,
