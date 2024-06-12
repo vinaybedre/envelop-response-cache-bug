@@ -1,0 +1,25 @@
+{
+  "name": "employee",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/employee/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "employee:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "employee:build:development"
+        },
+        "production": {
+          "buildTarget": "employee:build:production",
+          "inspect": false
+        }
+      }
+    }
+  }
+}
